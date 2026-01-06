@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Flipkart Minutes | South Hub Ops</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --fk-blue: #2874f0;
+            --fk-yellow: #ffc200;
+            --fk-green: #26a541;
+            --white: #ffffff;
+        }
+
+        * { box-sizing: border-box; font-family: 'Inter', sans-serif; }
+        
+        body { 
+            margin: 0; 
+            /* High-energy Hyperlocal Background */
+            background: linear-gradient(rgba(40, 116, 240, 0.85), rgba(40, 116, 240, 0.85)), 
+                        url('https://images.unsplash.com/photo-1626012648833-3d0738a92795?q=80&w=2070&auto=format&fit=crop');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+            color: #212121; 
+            min-height: 100vh;
+        }
+
+        /* --- LOGIN --- */
+        #loginPage {
+            position: fixed; inset: 0; background: var(--fk-blue);
+            display: flex; justify-content: center; align-items: center; z-index: 1000;
+        }
+        .login-card {
+            background: var(--white); padding: 40px; border-radius: 12px;
+            width: 100%; max-width: 380px; text-align: center; box-shadow: 0 15px 35px rgba(0,0,0,0.2);
+        }
+        .login-btn {
+            width: 100%; padding: 12px; background: var(--fk-yellow);
+            border: none; border-radius: 4px; font-weight: 800; cursor: pointer;
+            text-transform: uppercase; margin-top: 10px;
+        }
+
+        /* --- DASHBOARD --- */
+        #dashboard { display: none; }
+        
+        nav {
+            background: var(--white); padding: 0 8%; height: 70px;
+            display: flex; align-items: center; justify-content: space-between; 
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+        .nav-logo { font-weight: 800; font-size: 1.6rem; font-style: italic; color: var(--fk-blue); }
+        .nav-logo span { color: var(--fk-yellow); text-shadow: 1px 1px 1px rgba(0,0,0,0.1); }
+
+        .sub-nav {
+            background: rgba(255, 255, 255, 0.95); border-bottom: 1px solid #dbdbdb;
+            display: flex; justify-content: center; position: sticky; top: 0; z-index: 99;
+            backdrop-filter: blur(10px);
+        }
+        .tab-item {
+            padding: 18px 30px; cursor: pointer; font-weight: 700; color: #666;
+            border-bottom: 4px solid transparent; transition: 0.2s;
+        }
+        .tab-item.active { color: var(--fk-blue); border-bottom-color: var(--fk-blue); }
+
+        .container { padding: 30px 8%; max-width: 1200px; margin: 0 auto; }
+
+        /* --- BRAND BANNER --- */
+        .brand-banner {
+            background: var(--fk-yellow);
+            padding: 15px;
+            border-radius: 12px;
+            margin-bottom: 25px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 20px;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.15);
+        }
+        .brand-banner img { height: 50px; border-radius: 8px; }
+        .brand-banner h2 { margin: 0; font-weight: 800; color: #212121; text-transform: uppercase; font-size: 1.2rem; }
+
+        /* --- HUB METRICS --- */
+        .metric-card { 
+            background: rgba(255, 255, 255, 0.9); 
+            padding: 25px; border-radius: 15px; 
+            box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+            backdrop-filter: blur(8px);
+            margin-bottom: 25px;
+        }
+        
+        .capacity-bar-bg { background: #e0e0e0; height: 14px; border-radius: 10px; margin-top: 15px; overflow: hidden; }
+        .capacity-bar-fill { background: var(--fk-green); height: 100%; width: 0%; transition: 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+
+        /* --- ASSET FORM --- */
+        .asset-form {
+            background: rgba(255, 255, 255, 0.9); padding: 25px; border-radius: 15px;
+            display: grid; grid-template-columns: 1fr 1fr 1fr 0.5fr; gap: 15px;
+            margin-bottom: 25px; backdrop-filter: blur(8px);
+        }
+        input, select { padding: 14px; border: 1px solid #ddd; border-radius: 8px; font-size: 14px; }
+        .btn-add { background: var(--fk-blue); color: white; border: none; font-weight: 800; border-radius: 8px; cursor: pointer; transition: 0.3s; }
+        .btn-add:hover { background: #1a5abd; transform: translateY(-2px); }
+
+        /* --- TABLE --- */
+        .table-card { 
+            background: var(--white); border-radius: 15px; overflow: hidden; 
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2); 
+        }
+        table { width: 100%; border-collapse: collapse; }
+        th { background: #f8f9fa; padding: 20px; text-align: left; font-size: 13px; color: #666; border-bottom: 2px solid #eee; }
+        td { padding: 20px; border-bottom: 1px solid #f0f0f0; font-size: 15px; }
+        tr:last-child td { border-bottom: none; }
+        .serial-tag { background: #eef2f7; padding: 6px 12px; border-radius: 6px; font-family: monospace; font-weight: 700; color: var(--fk-blue); }
+    </style>
+</head>
+<body>
+
+    <div id="loginPage">
+        <div class="login-card">
+            <div class="nav-logo">Flipkart <span>minutes</span></div>
+            <p style="margin-bottom: 25px; font-weight: 600; font-size: 0.9rem; color: #555;">South Hub Operations Registry</p>
+            <input type="text" id="u" class="login-input" placeholder="Employee ID" style="width:100%; padding:14px; margin-bottom:12px; border:1px solid #ddd; border-radius:6px;">
+            <input type="password" id="p" class="login-input" placeholder="Password" style="width:100%; padding:14px; margin-bottom:25px; border:1px solid #ddd; border-radius:6px;">
+            <button class="login-btn" onclick="login()">Access Dashboard</button>
+        </div>
+    </div>
+
+    <div id="dashboard">
+        <nav>
+            <div class="nav-logo">Flipkart <span>minutes</span></div>
+            <button onclick="location.reload()" style="background:var(--fk-blue); border:none; color:white; padding:8px 18px; cursor:pointer; border-radius:6px; font-weight:700;">Logout</button>
+        </nav>
+
+        <div class="sub-nav">
+            <div class="tab-item active" onclick="switchHub('Devanahalli', this)">Devanahalli (D1)</div>
+            <div class="tab-item" onclick="switchHub('Jayanagar', this)">Jayanagar (J4)</div>
+            <div class="tab-item" onclick="switchHub('Whitefield', this)">Whitefield (W7)</div>
+        </div>
+
+        <div class="container">
+            <div class="brand-banner">
+                <img src="https://img1a.flixcart.com/www/linchpin/fk-cp-zion/img/flipkart-plus_8d85f4.png" alt="FK">
+                <h2>⚡ 10 Minute Hyperlocal Delivery Network</h2>
+            </div>
+
+            <div class="metric-card">
+                <span style="font-weight: 800; color: #444; font-size: 1.1rem;">HUB STORAGE CAPACITY</span>
+                <span id="capText" style="float: right; font-weight: 800; color: var(--fk-blue); font-size: 1.1rem;">0 / 50 Units</span>
+                <div class="capacity-bar-bg">
+                    <div id="capFill" class="capacity-bar-fill"></div>
+                </div>
+            </div>
+
+            <div class="asset-form">
+                <input type="text" id="assetName" placeholder="Asset (e.g. Desktop, Delivery Van)">
+                <input type="text" id="assetSerial" placeholder="Serial Number / Tag ID">
+                <select id="assetStatus">
+                    <option value="Ready">Ready (In Hub)</option>
+                    <option value="Active">Active (On Field)</option>
+                    <option value="Maintenance">Maintenance Required</option>
+                </select>
+                <button class="btn-add" onclick="addAsset()">Add Asset</button>
+            </div>
+
+            <div class="table-card">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Asset Description</th>
+                            <th>Serial / Tag ID</th>
+                            <th>Current Status</th>
+                            <th>Operation</th>
+                        </tr>
+                    </thead>
+                    <tbody id="assetBody"></tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let hub = "Devanahalli";
+        const MAX_CAPACITY = 50;
+
+        function login() {
+            document.getElementById('loginPage').style.display = 'none';
+            document.getElementById('dashboard').style.display = 'block';
+            loadHub();
+        }
+
+        function switchHub(name, el) {
+            hub = name;
+            document.querySelectorAll('.tab-item').forEach(t => t.classList.remove('active'));
+            el.classList.add('active');
+            loadHub();
+        }
+
+        function addAsset() {
+            const name = document.getElementById('assetName').value;
+            const serial = document.getElementById('assetSerial').value;
+            const status = document.getElementById('assetStatus').value;
+
+            if(!name || !serial) return alert("Please enter Asset Name and Serial Number");
+
+            const data = JSON.parse(localStorage.getItem(`min_fk_${hub}`) || '[]');
+            if(data.length >= MAX_CAPACITY) return alert("Alert: Hub Capacity Reached!");
+
+            data.unshift({ id: Date.now(), name, serial, status });
+            localStorage.setItem(`min_fk_${hub}`, JSON.stringify(data));
+
+            document.getElementById('assetName').value = '';
+            document.getElementById('assetSerial').value = '';
+            loadHub();
+        }
+
+        function loadHub() {
+            const data = JSON.parse(localStorage.getItem(`min_fk_${hub}`) || '[]');
+            const body = document.getElementById('assetBody');
+            body.innerHTML = '';
+
+            const percent = (data.length / MAX_CAPACITY) * 100;
+            const fill = document.getElementById('capFill');
+            fill.style.width = percent + '%';
+            document.getElementById('capText').innerText = `${data.length} / ${MAX_CAPACITY} Units Registered`;
+            
+            // Color logic for bar
+            if(percent > 90) fill.style.background = '#ff4343';
+            else if(percent > 70) fill.style.background = '#ffc200';
+            else fill.style.background = '#26a541';
+
+            data.forEach(item => {
+                const statusColor = item.status === 'Ready' ? '#26a541' : (item.status === 'Active' ? '#2874f0' : '#ff4343');
+                body.innerHTML += `
+                    <tr>
+                        <td><strong>${item.name}</strong></td>
+                        <td><span class="serial-tag">${item.serial}</span></td>
+                        <td><span style="display:inline-block; width:10px; height:10px; border-radius:50%; background:${statusColor}; margin-right:8px;"></span><span style="color:${statusColor}; font-weight:700;">${item.status}</span></td>
+                        <td><button onclick="remove(${item.id})" style="border:none; background:rgba(255,0,0,0.1); color:#ff4343; padding:6px 12px; border-radius:4px; cursor:pointer; font-weight:700;">Delete</button></td>
+                    </tr>
+                `;
+            });
+        }
+
+        function remove(id) {
+            if(confirm("Confirm deletion of this asset record?")) {
+                let data = JSON.parse(localStorage.getItem(`min_fk_${hub}`)).filter(i => i.id !== id);
+                localStorage.setItem(`min_fk_${hub}`, JSON.stringify(data));
+                loadHub();
+            }
+        }
+    </script>
+</body>
+</html>
